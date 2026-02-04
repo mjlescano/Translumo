@@ -25,7 +25,7 @@ jobs:
         run: dotnet restore Translumo.sln
 
       - name: Publish
-        run: dotnet publish src/Translumo/Translumo.csproj -c Release -o publish
+        run: dotnet publish src/Translumo/Translumo.csproj -c Release -o publish -p:SolutionDir="$env:GITHUB_WORKSPACE\"
 
       - name: Zip publish output
         run: |
