@@ -1,0 +1,44 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore Translumo.sln
+
+      - name: Publish
+        run: dotnet publish src/Translumo/Translumo.csproj -c Release -o publish
+
+      - name: Zip publish output
+        run: |
+          $zipName = "Translumo_${{ github.ref_name }}.zip"
+          Compress-Archive -Path publish\* -DestinationPath $zipName
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Translumo-${{ github.ref_name }}
+          path: Translumo_${{ github.ref_name }}.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Translumo_${{ github.ref_name }}.zip
