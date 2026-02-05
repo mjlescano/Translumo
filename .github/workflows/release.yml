@@ -30,7 +30,7 @@ jobs:
       - name: Zip publish output
         run: |
           $zipName = "Translumo_${{ github.ref_name }}.zip"
-          Compress-Archive -Path publish\* -DestinationPath $zipName
+          Compress-Archive -Path @("publish\Translumo.exe", "ext_components\python", "ext_components\models") -DestinationPath $zipName
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
